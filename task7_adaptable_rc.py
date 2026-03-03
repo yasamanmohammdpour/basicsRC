@@ -382,7 +382,7 @@ for t_idx, (n_cycles, t_steps) in enumerate(zip(N_CYCLE_VALS, T_STEPS)):
             segments, N_RES,
             HP["d"], HP["eig_rho"], HP["gamma"],
             ALPHA, BETA, NOISE_A, RHO_P, PB,
-            WASHOUT, seed=42
+            WASHOUT, seed=None
         )
 
         # Evaluate training error per segment

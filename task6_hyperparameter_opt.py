@@ -251,7 +251,7 @@ KEEP_FRAC = 0.8
 # Hyperparameter search bounds  (same as Zheng-Meng opt_lorenz.py)
 PBOUNDS = {
     "d":         (0.01, 0.30),   # was 0.40 — high d → dense reservoir, overfits
-    "eig_rho":   (2.00, 5.00),   # was 0.10 — very low rho → dead reservoir
+    "eig_rho":   (0.10, 5.00),   # DOUBT 0.10 — very low rho → dead reservoir
     "gamma":     (0.01, 5.00),
     "alpha":     (0.01, 0.95),   # was 1.00 — alpha=1 means zero memory
     "beta_log":  (-7.0, -1.0),
@@ -674,13 +674,32 @@ if __name__ == "__main__":
     plot_bar(hand_rmse, rs_val_rmse, bo_val_rmse)
 
     # ── Step 6: Save ──────────────────────────────────────────────────────────
+    # Determine best method between Random Search and Bayesian
+    if bo_val_rmse <= rs_val_rmse:
+        best_source = "bayesian"
+        best_params = bo_params
+        best_rmse   = bo_val_rmse
+    else:
+        best_source = "random"
+        best_params = rs_params
+        best_rmse   = rs_val_rmse
+
     with open(out("task6_results.pkl"), "wb") as f:
         pickle.dump({
             "hand":   {"params": HAND,      "rmse": hand_rmse},
             "rs":     {"params": rs_params, "rmse": rs_val_rmse, "history": rs_hist},
             "bayes":  {"params": bo_params, "rmse": bo_val_rmse},
-            "preds":  {"hand": hand_pred, "rs": rs_pred,
-                       "bayes": bo_pred,  "true": test_true},
+            "best":   {
+                "params": best_params,
+                "rmse":   best_rmse,
+                "source": best_source
+            },
+            "preds":  {
+                "hand": hand_pred,
+                "rs": rs_pred,
+                "bayes": bo_pred,
+                "true": test_true
+            }
         }, f)
     print("\nResults saved to  task6_results.pkl")
     print("Task 6 complete.")
