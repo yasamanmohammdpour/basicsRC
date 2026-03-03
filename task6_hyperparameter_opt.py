@@ -27,9 +27,16 @@ from bayes_opt import BayesianOptimization
 import warnings
 import time
 import pickle
+import os
 
 warnings.filterwarnings("ignore")
 
+# Output directory
+OUT_DIR = "task6_results"
+os.makedirs(OUT_DIR, exist_ok=True)
+
+def out(fname):
+    return os.path.join(OUT_DIR, fname)
 
 # =============================================================================
 # 1.  LORENZ SYSTEM  — identical to Task 1 / Task 4
@@ -525,7 +532,7 @@ def plot_short_term(pred, true, label, val_rmse, n=500):
         axes[i].legend(fontsize=10)
         axes[i].grid(alpha=0.25)
     axes[2].set_xlabel("Time step", fontsize=11)
-    fname = f"task6_short_{label.lower().replace(' ','_')}.png"
+    fname = out(f"task6_short_{label.lower().replace(' ','_')}.png")
     plt.savefig(fname, dpi=150, bbox_inches="tight")
     print(f"  Saved {fname}")
     plt.show()
@@ -539,7 +546,7 @@ def plot_attractor(pred, true, label):
     ax1.set_title("True  (x–z)"); ax1.set_xlabel("x"); ax1.set_ylabel("z")
     ax2.plot(pred[:, 0], pred[:, 2],  "b-", lw=0.35, alpha=0.7)
     ax2.set_title("Predicted  (x–z)"); ax2.set_xlabel("x"); ax2.set_ylabel("z")
-    fname = f"task6_attractor_{label.lower().replace(' ','_')}.png"
+    fname = out(f"task6_attractor_{label.lower().replace(' ','_')}.png")
     plt.savefig(fname, dpi=150, bbox_inches="tight")
     print(f"  Saved {fname}")
     plt.show()
@@ -568,7 +575,7 @@ def plot_convergence(rs_history, bo_opt):
     ax.set_title("Task 6 — Convergence Comparison",
                  fontsize=12, fontweight="bold")
     ax.legend(fontsize=11); ax.grid(alpha=0.3, which="both")
-    plt.savefig("task6_convergence.png", dpi=150, bbox_inches="tight")
+    plt.savefig(out("task6_convergence.png"), dpi=150, bbox_inches="tight")
     print("  Saved task6_convergence.png")
     plt.show()
 
@@ -587,7 +594,7 @@ def plot_bar(hand_rmse, rs_rmse, bo_rmse):
     ax.set_title("Task 6 — Method Comparison (Lorenz)",
                  fontsize=12, fontweight="bold")
     ax.grid(axis="y", alpha=0.3)
-    plt.savefig("task6_bar.png", dpi=150, bbox_inches="tight")
+    plt.savefig(out("task6_bar.png"), dpi=150, bbox_inches="tight")
     print("  Saved task6_bar.png")
     plt.show()
 
@@ -667,7 +674,7 @@ if __name__ == "__main__":
     plot_bar(hand_rmse, rs_val_rmse, bo_val_rmse)
 
     # ── Step 6: Save ──────────────────────────────────────────────────────────
-    with open("task6_results.pkl", "wb") as f:
+    with open(out("task6_results.pkl"), "wb") as f:
         pickle.dump({
             "hand":   {"params": HAND,      "rmse": hand_rmse},
             "rs":     {"params": rs_params, "rmse": rs_val_rmse, "history": rs_hist},
